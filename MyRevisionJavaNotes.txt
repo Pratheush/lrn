@@ -1,3 +1,4 @@
+###JAVA NOTES:::
 An object has three characteristics:
 
     state: represents data (value) of an object.
