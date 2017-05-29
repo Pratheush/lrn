@@ -1,0 +1,357 @@
+autowiring default setting basics
+default-autowire is for root bean tag defines autowire for all the defined beans in the container
+
+default-autowire-candidates is in root bean tag here defines the id of the bean which we
+want to use it for injection.here we can add multiple id's of the beans by just adding comma(,)
+and these two are default settings which can be override in local settings.
+
+autowire-candidate value is false or true and primary is used in bean tag to remove the ambiguity
+primary attribute tells which beans would be used for injection or autowired
+and autowire-candidate attribute tells which bean would be included or rejected while autowiring
+
+<context:component-scan base-package="com.jlcindia.spring"/>
+here context is the applicationcontainer applicationcontext
+here using this tag we are defining and telling that spring should
+scan this base-package for the component i.e. the class marked with @Component("myInsurance"), here class is marked with @Component defining with name or id of it which is available for scan in the container.
+@Component("myInsurance")::: myInsurance is beans id or bean name
+using @Component above the class tells the spring that register this class as bean in the spring container.
+
+if suppose we don't give bean name or id and only @Component is given over the class then
+class name and given bean id or bean name given inside context.getBean() method should be the 
+same the only difference should be that the bean id or bean name given inside getBean() method
+is little different i.e the bean name or class name is almost name but it has to start with small letter like class name is BikeInsurance then in getBean() method bean id or bean name has to be like bikeInsurance.
+
+
+<context:annotation-config>
+<context:annotation-config> is used to activate annotation in the project for beans already registered in the applcation context(for any beans, either registered with xml or by package scanning).
+
+<context:component-scan>
+by using <context:component-scan> and pointing the base package, Spring will auto-discover and registers the components(beans) into the spring container.By making use of <context:component-scan>, the annotations for the project get's auto activated.
+
+
+@Autowired(required=false)
+public BikeInsurance(Offers offer){    //constructor of class BikeInsurance and Offer is another
+System.out.println(offer.getOffer())   //class which is injected or autowired into the
+}                                      //BikeInsurance class.
+@Autowired(required=false)
+here required attribute is used with its value is false along with @Autowired telling that it is not mandatory to use that contstructor with parameter offer if the dependent bean Offers is not availabe or registered in the spring container as Offers class is not registered to the spring container either using xml or using annotation(@Component(offers) or @Bean(name="offers")).hence BikeInsurance class is instantiated by default constructor without autowiring or injecting Offers into BikeInsurance class.and by default required attribute is always true.
+
+@Autowired is more powerful - it works with constructors as well whereas @Resourse doesn't, 
+
+@Component
+public class Address {
+ 
+ @Autowired(required=true) // for setter injection
+ @Value("201")
+ public String flatNo;
+
+
+destroy-method will not be called in prototype scope of bean
+
+@Scope("prototype") annotation is used to define prototype scope for a bean. written over the class under @Component("offers") or in config class above getter method of that class(like in jlc book).
+
+
+<context:property-placeholder location="classpath:org/studyeasy/resources/offersList.properties"/>
+
+and place properties file in src or in any package inside src .as here above we are using classpath in location attribute of context:property-placeholder tag which includes upto src folder of project.
+and in value attribute we just mention the key from the propery file just using like:: value="${jlc.pw}"
+
+@Configuration
+@ComponentScan("org.studyeasy.spring")
+here @Configuration is used when we are not using xml configuration and we are just using annotation configuration. here @ComponentScan("org.studyeasy.spring") scans for the components(beans) i.e classes which are marked with @Component("offers") in the specified package.
+
+in the above @Configuration case we use AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(AppConfig.class); here AppConfig.class is class which is marked with @Configuration 
+
+
+Spring Expression Language(spel)
+for using spring expression language we have to use the syntak like this:::=> value="#{'no offers'}" in the value attribute of property tag of a bean and it shall be used with ref attribute too.
+Spring expression language helps and gives advancements in adding any kind of arithmetic or any kind of operations and it also helps in calling value directly using a variable or a method of class with the help of bean id. 
+
+for example:::: <bean id="myInsurance" class="com.jlcindia.spring.BikeInsurance">
+                  <property name="currentOffer" value="#{'offers usa:'+offers.OfferUS}"/>
+                  </bean>
+                
+                <bean id="myInsurance" class="com.jlcindia.spring.BikeInsurance">
+                  <property name="currentOffer" value="#{'offers usa:'+offers.getOfferUS()}"/>
+                  </bean>
+                 
+                 <bean id="myInsurance" class="com.jlcindia.spring.BikeInsurance">
+                  <property name="currentOffer" value="#{'offers %:'+(20+33)}"/>
+                  </bean>
+
+
+Reading from property file XML Config:::
+add property file in src folder or in any package under src folder
+to read from property file add the below given tag in xml configuration file
+example:: <context:property-placeholder location="classpath:offerslist.properties"/>
+then whereever we want to use the value from the property file there we have to use like this given example:: <property name="currentOffer" value="${offers.IND}"/>
+
+
+
+@Bean:::
+this @Bean annotation is used on method in configuration class and that method should return the object of the bean which we want to register and use in our application context. while using @Bean annotation we don't have to use @ComponentScan annotation. the method which is marked with @Bean has to return bean object and also the method name has to be exactly same which is used in getBean() method.
+
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+Insurance ins=(Insurance)ctx.getBean("myInsurance",Insurance.class);
+
+@Configuration
+class AppConfig{
+
+@Bean
+public BikeInsurance myInsurance(){ //method name is exactly same used in the ctx.getBean
+return new BikeInsurance();                        ("myInsurance",Insurance.class)
+}
+}
+
+or else if the method name is not exactly same then we have to mention in @Bean like the given below::
+@Bean("myInsurance")  OR @Bean(name="myInsurance")
+
+
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+Insurance ins=(Insurance)ctx.getBean("myInsurance",Insurance.class);
+
+@Configuration
+class AppConfig{
+
+@Bean("myInsurance")
+public BikeInsurance getBikeInsurance(){ //method name is not same used in the ctx.getBean
+return new BikeInsurance();              //  ("myInsurance",Insurance.class) myInsurance is 
+}					 //   mentioned in @Bean
+}
+
+
+
+Constructor Injection using annotation:::
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+Insurance ins=(Insurance)ctx.getBean("myInsurance",Insurance.class);
+
+@Configuration
+class AppConfig{
+
+@Bean
+public Offer getOffer(){
+return new Offer();
+}
+
+
+@Bean
+public BikeInsurance myInsurance(){ //for constructor injection inject the method of the 
+return new BikeInsurance(getOffer()); // dependent bean which is registered in the java 
+}					//configuration class and which is marked with @Bean.
+}
+
+
+Reading from Property File using annotation:::
+to read from propery file using annotation first we have to configure location and register propertySourcePlaceHolderConfigurer in the java configuration file using a static method returning propertySourcePlaceHolderConfigurer object and also marked with @Bean anotation.
+for configuring location of property file into the java configuration class use @PropertySource anotation 
+for example::
+
+@Configuration
+@PropertySource("classpath:offerslist.properties")
+class AppConfig{
+
+@Bean
+public static PropertySourcePlaceholderConfigurer PropertySourcePlaceholderConfigurer(){
+return new PropertySourcePlaceholderConfigurer();
+}
+
+@Bean
+public BikeInsurance myInsurance(){ //method name is exactly same used in the ctx.getBean
+return new BikeInsurance();                        ("myInsurance",Insurance.class)
+}
+}
+
+then second we have to use @Value for field or property where we want to read value from property file for example:::
+
+public class offer{
+
+@Value("${offers.IND}")
+public String currentOffer="no offers";
+
+public String getCurrentOffer(){
+return currentOffer;
+}
+
+public void setCurrentOffer(String currentOffer){
+this.currentOffer=currentOffer;
+}
+}
+
+but if we want to use @Value in setter method then we also have to use @Autowired with it like menthioned in below example:::
+
+public class offer{
+
+public String currentOffer="no offers";
+
+public String getCurrentOffer(){
+return currentOffer;
+}
+@Autowired
+public void setCurrentOffer(@Value("${offers.IND}")String currentOffer){
+this.currentOffer=currentOffer;
+}
+}
+
+
+NOTE:::
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/files/css/style.css"/>
+
+<a href="${pageContext.request.contextPath}/addUser">Add User</a>
+
+${pageContext.request.contextPath} => here we are using expression language to get the context path. this will give the base url or name of the domain.
+
+To Stop SSL SECURITY WHILE SERVER TRIES ESTABLISING SSL CONNECTION:::
+set query string(?useSSL=false) in the url of datasource for database:: 
+for example:: dataSource.setUrl("jdbc:mysql://localhost:3306/project?useSSL=false");
+
+code in the method of the controller::
+ModelAndView model=new ModelAndView("index");
+model.addObject("users",users);
+
+code in the jsp page for getting value from users object::
+for fetching value:::
+<c:forEach items="${users}" var="user">
+<tr>
+   <td>${user.userID}</td>
+   <td>${user.name}</td>
+   <td>${user.email}</td>
+</tr>
+</c:forEach>
+
+jsp page with form tag in it:::
+add the taglib in the header above the <head> tag of the jsp page
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+and in the body section in <table> tag
+<form:form modelAttribute="user" action="addUser">
+<tr><td>Name: <form:input path="name"/> <form:errors path="name" cssStyle="color:red"></form:errors></td></tr>
+<tr><td>Email: <form:input path="email"/> <form:errors path="email" cssStyle="color:red"></form:errors></td></tr>
+<tr><td><input type="submit" value="submit"></td></tr>
+</form:form>
+
+
+for controller add @Controller above the class and for mapping use @RequestMapping("/") above the method::
+for example::
+@Controller
+public class AppController{
+@RequestMapping("/addUser")
+public String addUser(Model model,User user){
+model.addAttribute("user",user);
+return "addUser";
+}
+}
+
+ADDING THE VALIDATION and ADDING THE USER:::
+in order to add the validation on email we have to use @Valid and we also have to use BindingResult. so code in the controller for it...
+
+@Controller
+public class AppController{
+@RequestMapping("/addUser")
+public String addUser(Model model,@Valid User user,BindingResult result){
+ if(result.hasErrors()){
+model.addAttribute("user",user);
+return "addUser";
+ }else{
+  if(user.getName!=null && user.getEmail!=null{
+ AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+   AppDAOImpl dao =ctx.getBean("DAOBean",AppDAOImpl.class);
+   dao.addUser(user);
+   ctx.close();
+   return "forward:/";
+  }else{
+    System.out.println("loading form...");
+   return "addUser";
+  }
+ }
+}
+}
+
+and then mark the email variable of User class with @Email like::
+@Email
+private String email;
+
+and code in the AppDAOImpl.java file for addUser() method::
+here dataSource is a variable of type DataSource in AppDAOImpl.java which is injected through constructor.
+public void addUser(User user){
+ String sql="insert into users(name,email) values(?,?)";
+ Connection con=null;
+ try{
+  con=dataSource.getConnection();
+  PreparedStatement ps=con.prepareStatement(sql);
+  ps.setString(1,user.getName());
+  ps.setString(2,user.getEmail());
+  System.out.println(ps.execute());
+  ps.close();
+  }catch(SQLException e){
+      e.printStackTrace();
+  }finally{
+    if(con!=null){
+    try{
+     con.close();
+     }catch(Exception e){
+      e.printStackTrace();
+     }
+     
+   }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
