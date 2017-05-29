@@ -1,0 +1,227 @@
+An object has three characteristics:
+
+    state: represents data (value) of an object.
+    behavior: represents the behavior (functionality) of an object such as deposit, withdraw etc.
+    identity: Object identity is typically implemented via a unique ID. The value of the ID is not visible to the external user. But, it is used internally by the JVM to identify each object uniquely.
+
+A variable which is created inside the class but outside the method, is known as instance variable. Instance variable doesn't get memory at compile time. It gets memory at run time when object(instance) is created. That is why, it is known as instance variable.
+
+All objects get memory in Heap memory area.
+
+static variables get memory in class area n memory allocation happens at class loading and is shared by the all objects created.
+
+reference variable which has instance or object of class get memory in stack.The reference variable refers to the object allocated in the heap memory area.
+
+Initializing object simply means storing data into object.
+There are 3 ways to initialize object in java.
+    By reference variable
+    By method
+    By constructor
+
+There are many ways to create an object in java. They are:
+    By new keyword
+    By newInstance() method
+    By clone() method
+    By deserialization
+    By factory method etc.
+
+Anonymous object:An object which has no reference is known as anonymous object. It can be used at the time of object creation only.If you have to use an object only once, anonymous object is a good approach.
+new Calculation();//anonymous object 
+
+Call to this() must be the first statement in constructor.
+
+this and super keyword cannot be used under static method or block context
+this keyword can also be passed as an argument in the method. It is mainly used in the event handling.In event handling (or) in a situation where we have to provide reference of a class to another one. It is used to reuse one object in many methods.
+
+    class B{  
+      A4 obj;  
+      B(A4 obj){  
+        this.obj=obj;  
+      }  
+      void display(){  
+        System.out.println(obj.data);//using data member of A4 class  
+      }  
+    }  
+      
+    class A4{  
+      int data=10;  
+      A4(){  
+       B b=new B(this);  
+       b.display();  
+      }  
+      public static void main(String args[]){  
+       A4 a=new A4();  
+      }  
+    }  
+    
+We can return this keyword as an statement from the method. In such case, return type of the method must be the class type (non-primitive).    
+  Syntax of this that can be returned as a statement
+
+    return_type method_name(){  
+    return this;  
+    }  
+
+    class A{  
+    A getA(){  
+    return this;  
+    }  
+    void msg(){System.out.println("Hello java");}  
+    }  
+    class Test1{  
+    public static void main(String args[]){  
+    new A().getA().msg();  
+    }  
+    }  
+
+The super keyword in java is a reference variable which is used to refer immediate parent class object.Whenever you create the instance of subclass, an instance of parent class is created implicitly which is referred by super reference variable.
+Usage of java super Keyword
+
+    super can be used to refer immediate parent class instance variable.
+    super can be used to invoke immediate parent class method.
+    super() can be used to invoke immediate parent class constructor.
+
+super() is added in each class constructor automatically by compiler if there is no super() or this().
+
+In java, Method Overloading is not possible by changing the return type of the method only because of ambiguity.
+Compile Time Error is better than Run Time Error. So, java compiler renders compiler time error if you declare the same method having same parameters.
+
+static method cannot be overridden.Why we cannot override static method?
+because static method is bound with class whereas instance method is bound with object. Static belongs to class area and instance belongs to heap area. 
+
+Inheritance represents the IS-A relationship, also known as parent-child relationship.
+use inheritance in java
+    For Method Overriding (so runtime polymorphism can be achieved).
+    For Code Reusability.
+
+multiple inheritance is not supported in java?
+To reduce the complexity and simplify the language, multiple inheritance is not supported in java.
+Consider a scenario where A, B and C are three classes. The C class inherits A and B classes. If A and B classes have same method and you call it from child class object, there will be ambiguity to call method of A or B class.
+Since compile time errors are better than runtime errors, java renders compile time error if you inherit 2 classes. So whether you have same method or different, there will be compile time error now.
+
+
+If a class have an entity reference, it is known as Aggregation. Aggregation represents HAS-A relationship.
+    class Employee{  
+    int id;  
+    String name;  
+    Address address;//Address is a class  
+    ...  
+    }  Employee has an entity reference address, so relationship is Employee HAS-A address.
+
+
+Code reuse is also best achieved by aggregation when there is no is-a relationship.
+    public class Address {  
+    String city,state,country;  
+      
+    public Address(String city, String state, String country) {  
+        this.city = city;  
+        this.state = state;  
+        this.country = country;  
+    }  
+      
+    }  
+
+Emp.java
+
+    public class Emp {  
+    int id;  
+    String name;  
+    Address address;  
+      
+    public Emp(int id, String name,Address address) {  
+        this.id = id;  
+        this.name = name;  
+        this.address=address;  
+    }  
+      
+    void display(){  
+    System.out.println(id+" "+name);  
+    System.out.println(address.city+" "+address.state+" "+address.country);  
+    }  
+      
+    public static void main(String[] args) {  
+    Address address1=new Address("gzb","UP","india");  
+    Address address2=new Address("gno","UP","india");  
+      
+    Emp e=new Emp(111,"varun",address1);  
+    Emp e2=new Emp(112,"arun",address2);  
+          
+    e.display();  
+    e2.display();  
+          
+    }  
+    }  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
